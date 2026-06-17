@@ -38,6 +38,22 @@ $hotels = [
     ],
 
 ];
+
+$parking = $_GET['parking'] ?? false;
+$vote = $_GET['vote'] ?? false;
+
+foreach ($hotels as $index => $hotel) {
+    if ($parking && $hotel['parking'] != true) {
+        unset($hotels[$index]);
+        continue;
+    }
+
+    if ($vote && $hotel['vote'] < $vote) {
+        unset($hotels[$index]);
+        continue;
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -56,6 +72,21 @@ $hotels = [
         <div class="container">
 
             <h1 class="my-4">Hotels</h1>
+
+            <form action="./">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="parking">
+                            <label class="form-check-label" for="parking">
+                                Parcheggio
+                            </label>
+                        </div>
+                    </span>
+                    <input type="number" class="form-control" placeholder="Voto" name="vote">
+                    <button class="btn btn-outline-secondary" type="submit">Cerca</button>
+                </div>
+            </form>
 
             <table
                 class="table table-striped">
