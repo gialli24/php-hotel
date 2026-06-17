@@ -1,6 +1,7 @@
 <?php
-$hotels = [
 
+// Hotels Array
+$hotels = [
     [
         'name' => 'Hotel Belvedere',
         'description' => 'Hotel Belvedere Descrizione',
@@ -39,20 +40,9 @@ $hotels = [
 
 ];
 
-$parking = $_GET['parking'] ?? false;
-$vote = $_GET['vote'] ?? false;
-
-foreach ($hotels as $index => $hotel) {
-    if ($parking && $hotel['parking'] != true) {
-        unset($hotels[$index]);
-        continue;
-    }
-
-    if ($vote && $hotel['vote'] < $vote) {
-        unset($hotels[$index]);
-        continue;
-    }
-}
+// Filters
+$parking_filter = (isset($_GET['parking']) && $_GET['parking'] == 'on') ? true : false;
+$vote_filter = (isset($_GET['vote']) && !empty($_GET['vote']) && is_numeric($_GET['vote'])) ? $_GET['vote'] : 0;
 
 ?>
 
@@ -62,7 +52,7 @@ foreach ($hotels as $index => $hotel) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
+    <title>Hotels</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
 
@@ -100,24 +90,29 @@ foreach ($hotels as $index => $hotel) {
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- Dinamyc Content -->
                     <?php
                     foreach ($hotels as $hotel) {
-                        echo '<tr class="">';
 
-                        foreach ($hotel as $key => $value) {
-                            if ($key == 'parking') {
-                                $hasParking = $value == true ? 'Si' : 'No';
-                                echo "<td>$hasParking</td>";
-                            } elseif ($key == "distance_to_center") {
-                                echo "<td>$value km</td>";
-                            } else {
-                                echo "<td>$value</td>";
-                            }
+                        // Filter by parking
+                        if ($parking_filter && !$hotel['parking']) {
+                            continue;
                         }
 
-                        echo '</tr>';
-                    }
+                        // Filter by vote
+                        if ($vote_filter && $hotel['vote'] < $vote_filter) {
+                            continue;
+                        }
+
                     ?>
+                        <tr>
+                            <td><?php echo $hotel['name'] ?></td>
+                            <td><?php echo $hotel['description'] ?></td>
+                            <td><?php echo $hotel['parking'] ? 'Si' : 'No' ?></td>
+                            <td><?php echo $hotel['vote'] ?></td>
+                            <td><?php echo $hotel['distance_to_center'] . " km" ?></td>
+                        </tr>
+                    <?php } ?>
                 </tbody>
             </table>
 
